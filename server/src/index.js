@@ -26,26 +26,28 @@ app.post("/todos", async(req, res) => {
             "INSERT INTO todo (description) VALUES($1) RETURNING *",
             [description]
         );
-        const formattedTodos = todos.rows.map(todo => ({
-            ...todo,
-            created_at: todo.created_at.toISOString().split('T')[0] // Format as YYYY-MM-DD
-          }));
-        
         res.json(newTodo.rows[0]);
-
-          res.json(formattedTodos);
     } catch (err) {
         console.error(err.message);
     }
-
-    
-})
+});
 
 
 // get all todos
 
-app
+app.get("/todos", async(req, res) => {
+    try {
+        const allTodos = await pool.query("SELECT * FROM todo");
 
+        const formattedTodos = allTodos.rows.map(todo => ({
+            ...todo,
+            created_at: todo.created_at.toISOString().split("T")[0],
+        }));
+        res.json(formattedTodos);
+    } catch (err) {
+        console.error(err.message);
+    }
+});
 
 //update a todo
 
