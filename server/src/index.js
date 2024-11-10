@@ -49,11 +49,29 @@ app.get("/todos", async(req, res) => {
     }
 });
 
+
+
+app.get("/todos/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const todo = await pool.query("SELECT * FROM todo WHERE todo_id = $1", [
+            id
+        ]);
+        res.json(todo.rows[0]);
+        
+    } catch (error) {
+        console.error(err.message);
+    }
+
+});
+
 //update a todo
 
 
 //Delete a todo
 
+
+// Start a server
 const port = 5000;
 
 app.listen(port, () => {
