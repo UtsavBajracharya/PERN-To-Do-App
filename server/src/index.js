@@ -14,11 +14,7 @@ const createdAt = new Date();
 const formattedDate = createdAt.toISOString().split('T')[0];
 
 
-
-
 // create a todo
-
-
 app.post("/todos", async(req, res) => {
     try {
         const {description} = req.body;
@@ -39,6 +35,7 @@ app.get("/todos", async(req, res) => {
     try {
         const allTodos = await pool.query("SELECT * FROM todo");
 
+        // Format `created_at` to `YYYY-MM-DD`
         const formattedTodos = allTodos.rows.map(todo => ({
             ...todo,
             created_at: todo.created_at.toISOString().split("T")[0],
@@ -49,15 +46,26 @@ app.get("/todos", async(req, res) => {
     }
 });
 
-
-
+// get todos by id
 app.get("/todos/:id", async (req, res) => {
     try {
         const { id } = req.params;
         const todo = await pool.query("SELECT * FROM todo WHERE todo_id = $1", [
             id
         ]);
-        res.json(todo.rows[0]);
+
+         // Check if the todo was found
+        if (todo.rows.length === 0) {
+            return res.status(404).json({ error: "Todo not found" });
+        }
+
+        // Format `created_at` to `YYYY-MM-DD`
+        const formattedTodo = {
+            ...todo.rows[0],
+            created_at: todo.rows[0].created_at.toISOString().split("T")[0]
+        };
+
+        res.json(formattedTodo);
         
     } catch (error) {
         console.error(err.message);
