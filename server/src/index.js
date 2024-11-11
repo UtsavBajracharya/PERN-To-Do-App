@@ -9,7 +9,6 @@ app.use(cors());
 app.use(express.json());
 
 //Routes 
-
 const createdAt = new Date();
 const formattedDate = createdAt.toISOString().split('T')[0];
 
@@ -50,9 +49,7 @@ app.get("/todos", async(req, res) => {
 app.get("/todos/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        const todo = await pool.query("SELECT * FROM todo WHERE todo_id = $1", [
-            id
-        ]);
+        const todo = await pool.query("SELECT * FROM todo WHERE todo_id = $1", [id]);
 
          // Check if the todo was found
         if (todo.rows.length === 0) {
@@ -74,6 +71,25 @@ app.get("/todos/:id", async (req, res) => {
 });
 
 //update a todo
+
+app.put("/todos/:id", async(req,res) =>  {
+    try {
+        const { id } = req.params;
+        const { description, completed } = req.body;
+        // Ensure `completed` is a boolean
+        const completedBool = completed === true || completed === "true" || completed === 1 || completed === "1";
+
+        // Update both description and completed status
+        const updateTodo = await pool.query(
+            "UPDATE todo SET description = $1, completed = $2 WHERE todo_id = $3",
+            [description, completedBool, id]
+        );
+
+        res.json("Todo was updated");   
+    } catch (err) {
+        console.error(err.message);
+    }
+});
 
 
 //Delete a todo
