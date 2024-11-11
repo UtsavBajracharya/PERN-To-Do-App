@@ -9,9 +9,6 @@ app.use(cors());
 app.use(express.json());
 
 //Routes 
-const createdAt = new Date();
-const formattedDate = createdAt.toISOString().split('T')[0];
-
 
 // create a todo
 app.post("/todos", async(req, res) => {
