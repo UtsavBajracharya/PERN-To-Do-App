@@ -4,6 +4,7 @@ import './App.css';
 
 //components
 import InputTodo from "./components/inputTodo";
+import ListTodos from "./components/ListTodos";
 
 
 function App() {
@@ -12,6 +13,8 @@ function App() {
      <div className="container">
         <InputTodo />
      </div>
+
+     <ListTodos />
     </Fragment>
     );
 }
