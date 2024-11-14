@@ -2,14 +2,14 @@ pipeline {
     agent any
 
     tools {
-        nodejs('NodeJS')
+        nodejs('NodeJs')
     }
 
     environment {
         SCANNER_HOME = tool 'SonarQubeScanner'
         NEXUS_VERSION = "nexus3"
         NEXUS_PROTOCOL = "http"
-        NODEJS_HOME = tool name: 'NodeJS' // Assumes NodeJS is configured in Jenkins tools
+        NODEJS_HOME = tool name: 'NodeJs' // Assumes NodeJs is configured in Jenkins tools
         PATH = "${NODEJS_HOME}/bin:${env.PATH}"
         SONARQUBE_SERVER = 'SonarQube'  // Name configured for SonarQube in Jenkins
         NEXUS_URL = 'localhost:8081' // Nexus URL
