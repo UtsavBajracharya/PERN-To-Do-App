@@ -45,7 +45,7 @@ pipeline {
                 script {
                     withSonarQubeEnv('SonarQube') {
                         sh """${SCANNER_HOME}/bin/sonar-scanner -Dsonar.host.url=http://localhost:9000/ \
-                        -Dsonar.token=squ_440ee671b08bbf53a2c9d4c7e25c14d0bc5a1493 \ 
+                        -Dsonar.token=squ_440ee671b08bbf53a2c9d4c7e25c14d0bc5a1493 \
                         -Dsonar.projectName="PERN-To-Do-App" \
                         -Dsonar.exclusions=**/node_modules/** \
                         -Dsonar.projectKey=PERN-To-Do-App"""
