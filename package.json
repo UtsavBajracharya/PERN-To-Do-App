@@ -7,6 +7,9 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js"
   },
+  "publishConfig": {
+    "registry": "http://localhost:8081/repository/npm-todo-repo/"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

@@ -1,0 +1,96 @@
+pipeline {
+    agent any
+
+    tools {
+        nodejs('NodeJS')
+    }
+
+    environment {
+        SCANNER_HOME = tool 'SonarQubeScanner'
+        NEXUS_VERSION = "nexus3"
+        NEXUS_PROTOCOL = "http"
+        NODEJS_HOME = tool name: 'NodeJS' // Assumes NodeJS is configured in Jenkins tools
+        PATH = "${NODEJS_HOME}/bin:${env.PATH}"
+        SONARQUBE_SERVER = 'SonarQube'  // Name configured for SonarQube in Jenkins
+        NEXUS_URL = 'localhost:8081' // Nexus URL
+        NEXUS_REPO = 'npm-todo-repo'
+        NEXUS_CREDENTIALS_ID = 'npm-nexus-creds' // Jenkins credentials ID for Nexus
+    }
+
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                withCredentials([file(credentialsId: 'npm-nexus-creds', variable: 'mynpmrc')]) {
+                    echo 'Building...'
+                    sh 'npm install --userconfig $mynpmrc --registry http://localhost:8081/repository/npm-todo-repo --loglevel verbose'
+                }
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    withSonarQubeEnv('SonarQube') {
+                        sh """${SCANNER_HOME}/bin/sonar-scanner -Dsonar.host.url=http://localhost:9000/ \
+                        -Dsonar.token=squ_440ee671b08bbf53a2c9d4c7e25c14d0bc5a1493 \ 
+                        -Dsonar.projectName="PERN-To-Do-App" \
+                        -Dsonar.exclusions=**/node_modules/** \
+                        -Dsonar.projectKey=PERN-To-Do-App"""
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                script {
+                    sleep(time: 20, unit: 'SECONDS') // Sleep to wait for the status to update
+                    def qualityGate = waitForQualityGate()
+                    if (qualityGate.status == 'IN_PROGRESS') {
+                        sleep(time: 20, unit: 'SECONDS') // Sleep to wait for the status to update
+                        error "Quality Gate is still in progress. Retrying..."
+                    }
+
+                    if (qualityGate.status != 'OK') {
+                        error "Quality Gate failed: ${qualityGate.status}"
+                    }
+                    else {
+                        echo "Quality Gate passed: ${qualityGate.status}"
+                    }
+                }
+            }
+        }
+
+
+        stage('Publish to Nexus') {
+            steps {
+                withCredentials([file(credentialsId: 'npm-nexus-creds', variable: 'mynpmrc')]) {
+                    echo 'Publishing to Nexus...'
+                    sh 'npm publish --userconfig $mynpmrc --loglevel verbose'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed.'
+        }
+    }
+}
