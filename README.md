@@ -128,12 +128,24 @@ We use **Postgres** as the database for this application. Follow these steps:
 
 1.  Log in to Nexus via npm:
 
-2.  Open bash and Copy codes below:
-    ```npm login --registry=http://localhost:8081/repository/npm-todo-group/```
-3.  Run the code below:
-    ```npm login --registry=http://localhost:8081/repository/npm-todo-repo/```
+2.  Open bash and copy code below:
+
+    ```group
+    npm login --registry=http://localhost:8081/repository/npm-todo-group/
+    ```
+
+3.  Again, run the code below:
+
+    ```repo
+    npm login --registry=http://localhost:8081/repository/npm-todo-repo/
+    ```
+
 4.  Verify and create .npmrc:
-    ```cat ~/.npmrc```
+
+    ```npm
+    cat ~/.npmrc
+    ```
+    
 5.  Add publishConfig in package.json:
 
 ```json

@@ -1,0 +1,116 @@
+pipeline {
+    agent any
+
+    tools {
+        nodejs('NodeJS')
+    }
+
+    environment {
+        NODEJS_HOME = tool name: 'NodeJS' // Assumes NodeJS is configured in Jenkins tools
+        PATH = "${NODEJS_HOME}/bin:${env.PATH}"
+
+        SCANNER_HOME = tool 'SonarQubeScanner'
+        SONARQUBE_SERVER = 'SonarQube'  // Name configured for SonarQube in Jenkins
+
+        NEXUS_VERSION = "nexus3"
+        NEXUS_PROTOCOL = "http"
+        NEXUS_URL = 'localhost:8081' // Nexus URL
+        NEXUS_REPO = ‘npm-todo-repo’
+        NEXUS_CREDENTIALS_ID = 'nexus-user-creds' // Jenkins credentials ID for Nexus
+    }
+
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Building...'
+                sh 'chmod +x node_modules/.bin/*'
+                sh 'npm install'
+                sh 'npm run build'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                echo 'Running Tests...'
+                sh 'npm test'
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                script {
+                    withSonarQubeEnv('SonarQube') {
+                        sh """${SCANNER_HOME}/bin/sonar-scanner -Dsonar.host.url=http://localhost:9000/ \
+                        -Dsonar.token=squ_440ee671b08bbf53a2c9d4c7e25c14d0bc5a1493\
+                        -Dsonar.projectName="PERN-To-Do-App" \
+                        -Dsonar.exclusions=**/node_modules/**,**/coverage/**,**/__tests__/** \
+                        -Dsonar.projectKey=PERN-To-Do-App\
+                        -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info -Dsonar.test.inclusions=tests/**/*.test.js"""
+                    }
+                }
+            }
+        }
+
+        stage('Quality Gate') {
+            steps {
+                script {
+                    echo "Quality Gate is still in progress..."
+
+                    sleep(time: 20, unit: 'SECONDS') // Sleep to wait for the status to update
+                    def qualityGate = waitForQualityGate()
+
+                    if (qualityGate.status != 'OK' || qualityGate.status != 'SUCCESS') {
+                        echo "Quality Gate failed: ${qualityGate.status}"
+                    }
+                    else {
+                        echo "Quality Gate passed: ${qualityGate.status}"
+                    }
+                }
+            }
+        }
+
+        stage('Package') {
+            steps {
+                echo 'Packing...'
+                sh 'npm run package'
+            }
+        }
+
+        stage('Publish to Nexus') {
+            steps {
+                echo "Publishing to Nexus repository `${NEXUS_REPO}`..."
+                nexusArtifactUploader artifacts: [
+                    [
+                        artifactId: 'PERN-Todo',
+                        classifier: '',
+                        file: 'publish/todo-app.tgz',
+                        type: 'tgz'
+                    ]
+                ],
+                credentialsId: "${NEXUS_CREDENTIALS_ID}",
+                groupId: 'np.todo',
+                nexusUrl: "${NEXUS_URL}",
+                nexusVersion: "${NEXUS_VERSION}",
+                protocol: "${NEXUS_PROTOCOL}",
+                repository: "${NEXUS_REPO}",
+                version: '1.0.2'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed.'
+        }
+    }
+}
