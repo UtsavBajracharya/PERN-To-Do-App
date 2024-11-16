@@ -102,33 +102,38 @@ We use **Postgres** as the database for this application. Follow these steps:
 ### Step 4: Configure SonarQube
 
 1. Open SonarQube at http://localhost:9000.
+
 2. Generate an authentication token:
-3. Go to Administration > Security > Users.
-4. Click on Update Token, add a name, and generate the token.
-5. Save the token securely.
-6. Add the token to Jenkins:
-7. Navigate to Manage Jenkins > Credentials.
-   Add new credentials with Kind: Secret Text and paste the token.
+   - Go to Administration > Security > Users.
+   - Click on Update Token, add a name, and generate the token.
+   - Save the token securely.
+
+3. Add the token to Jenkins:
+   - Navigate to Manage Jenkins > Credentials.
+   - Add new credentials with Kind: Secret Text and paste the token.
 
 ### Step 5: Configure Nexus
 
 1. Open Nexus at http://localhost:8081.
+
 2. Log in using the default admin credentials found in /nexus-data/admin-password.
+
 3. Configure repositories:
-4. Create group, proxy, and hosted repositories.
-5. Add proxy and hosted repositories as members of the group.
-6. Enable npm support:
-7. Go to Security > Realms and activate npm Bearer Token Realm.
+   - Create group, proxy, and hosted repositories.
+   - Add proxy and hosted repositories as members of the group.
+4. Enable npm support:
+   - Go to Security > Realms and activate npm Bearer Token Realm.
 
 ### Step 6: Publish Files Using npm
 
 1.  Log in to Nexus via npm:
+
 2.  Open bash and Copy codes below:
-    `npm login --registry=http://localhost:8081/repository/npm-todo-group/`
+    ```npm login --registry=http://localhost:8081/repository/npm-todo-group/```
 3.  Run the code below:
-    `npm login --registry=http://localhost:8081/repository/npm-todo-repo/`
+    ```npm login --registry=http://localhost:8081/repository/npm-todo-repo/```
 4.  Verify and create .npmrc:
-    `cat ~/.npmrc`
+    ```cat ~/.npmrc```
 5.  Add publishConfig in package.json:
 
 ```json
