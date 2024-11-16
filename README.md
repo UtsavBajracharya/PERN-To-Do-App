@@ -1,6 +1,6 @@
 # PERN-To-Do-App
 
-# CI/CD Pipeline with Jenkins, SonarQube, and Nexus
+## CI/CD Pipeline with Jenkins, SonarQube, and Nexus
 
 Set up a CI/CD pipeline with Jenkins, SonarQube, and Nexus using Docker Compose. It includes steps to configure Postgres, install necessary services, and integrate Jenkins with SonarQube and Nexus.
 
@@ -66,7 +66,7 @@ We use **Postgres** as the database for this application. Follow these steps:
        container_name: postgres
        environment:
          POSTGRES_USER: postgres
-         POSTGRES_PASSWORD: 122111
+         POSTGRES_PASSWORD: password
          POSTGRES_DB: perntodo
 
      nexus:
@@ -83,7 +83,7 @@ We use **Postgres** as the database for this application. Follow these steps:
      postgres_data:
    ```
 
-3. Run docker-compose up -d to start all services in detached mode.
+3. Run `docker-compose up -d` to start all services in detached mode.
 
 ### Step 3: Configure Jenkins
 
@@ -103,52 +103,57 @@ We use **Postgres** as the database for this application. Follow these steps:
 
 1. Open SonarQube at http://localhost:9000.
 2. Generate an authentication token:
-   Go to Administration > Security > Users.
-   Click on Update Token, add a name, and generate the token.
-   Save the token securely.
-   Add the token to Jenkins:
-   Navigate to Manage Jenkins > Credentials.
+3. Go to Administration > Security > Users.
+4. Click on Update Token, add a name, and generate the token.
+5. Save the token securely.
+6. Add the token to Jenkins:
+7. Navigate to Manage Jenkins > Credentials.
    Add new credentials with Kind: Secret Text and paste the token.
-   Step 5: Configure Nexus
-   Open Nexus at http://localhost:8081.
-   Log in using the default admin credentials found in /nexus-data/admin-password.
-   Configure repositories:
-   Create group, proxy, and hosted repositories.
-   Add proxy and hosted repositories as members of the group.
-   Enable npm support:
-   Go to Security > Realms and activate npm Bearer Token Realm.
-   Step 6: Publish Files Using npm
-   Log in to Nexus via npm:
-   bash
-   Copy code
-   npm login --registry=http://localhost:8081/repository/npm-todo-group/
-   Verify and create .npmrc:
-   bash
-   Copy code
-   cat ~/.npmrc
-   Add publishConfig in package.json:
-   json
-   Copy code
-   "publishConfig": {
-   "registry": "http://localhost:8081/repository/npm-todo-repo/"
-   }
-   Step 7: Configure Nexus in Jenkins
-   Add Nexus credentials:
-   Navigate to Manage Jenkins > Credentials.
-   Add new credentials of type Secret File.
-   Configure Nexus repository settings in Manage Jenkins > Configure System.
-   Step 8: Create a Jenkins Pipeline
-   In Jenkins, go to Dashboard > New Item and create a pipeline.
-   Configure the pipeline:
-   Add a description and the GitHub project URL.
-   Use Pipeline Script from SCM and specify:
-   SCM: Git
-   Repository URL
-   Script Path
-   Step 9: Run the Pipeline
-   Go to the Jenkins dashboard and trigger the build.
-   Monitor the build process and logs.
-   URLs for Services
-   Jenkins: http://localhost:8082
-   SonarQube: http://localhost:9000
-   Nexus: http://localhost:8081
+
+### Step 5: Configure Nexus
+
+1. Open Nexus at http://localhost:8081.
+2. Log in using the default admin credentials found in /nexus-data/admin-password.
+3. Configure repositories:
+4. Create group, proxy, and hosted repositories.
+5. Add proxy and hosted repositories as members of the group.
+6. Enable npm support:
+7. Go to Security > Realms and activate npm Bearer Token Realm.
+
+### Step 6: Publish Files Using npm
+
+1.  Log in to Nexus via npm:
+2.  Open bash and Copy codes below:
+    `npm login --registry=http://localhost:8081/repository/npm-todo-group/`
+3.  Run the code below:
+    `npm login --registry=http://localhost:8081/repository/npm-todo-repo/`
+4.  Verify and create .npmrc:
+    `cat ~/.npmrc`
+5.  Add publishConfig in package.json:
+
+```json
+"publishConfig": {
+"registry": "http://localhost:8081/repository/npm-todo-repo/"
+}
+```
+
+Step 7: Configure Nexus in Jenkins
+Add Nexus credentials:
+Navigate to Manage Jenkins > Credentials.
+Add new credentials of type Secret File.
+Configure Nexus repository settings in Manage Jenkins > Configure System.
+Step 8: Create a Jenkins Pipeline
+In Jenkins, go to Dashboard > New Item and create a pipeline.
+Configure the pipeline:
+Add a description and the GitHub project URL.
+Use Pipeline Script from SCM and specify:
+SCM: Git
+Repository URL
+Script Path
+Step 9: Run the Pipeline
+Go to the Jenkins dashboard and trigger the build.
+Monitor the build process and logs.
+URLs for Services
+Jenkins: http://localhost:8082
+SonarQube: http://localhost:9000
+Nexus: http://localhost:8081
