@@ -116,7 +116,7 @@ We use **Postgres** as the database for this application. Follow these steps:
 
 1. Open Nexus at http://localhost:8081.
 
-2. Log in using the default admin credentials found in /nexus-data/admin-password.
+2. Log in using the default admin credentials in /nexus-data/admin-password.
 
 3. Configure repositories:
    - Create group, proxy, and hosted repositories.
@@ -154,23 +154,27 @@ We use **Postgres** as the database for this application. Follow these steps:
 }
 ```
 
-Step 7: Configure Nexus in Jenkins
-Add Nexus credentials:
-Navigate to Manage Jenkins > Credentials.
-Add new credentials of type Secret File.
-Configure Nexus repository settings in Manage Jenkins > Configure System.
-Step 8: Create a Jenkins Pipeline
-In Jenkins, go to Dashboard > New Item and create a pipeline.
-Configure the pipeline:
-Add a description and the GitHub project URL.
-Use Pipeline Script from SCM and specify:
-SCM: Git
-Repository URL
-Script Path
-Step 9: Run the Pipeline
-Go to the Jenkins dashboard and trigger the build.
-Monitor the build process and logs.
-URLs for Services
-Jenkins: http://localhost:8082
-SonarQube: http://localhost:9000
-Nexus: http://localhost:8081
+### Step 7: Configure Nexus in Jenkins
+1. Add Nexus credentials:
+  - Navigate to Manage Jenkins > Credentials.
+  - Add new credentials of type Secret File.
+2. Configure Nexus repository settings in Manage Jenkins > Configure System.
+
+### Step 8: Create a Jenkins Pipeline
+
+1. In Jenkins, go to Dashboard > New Item and create a pipeline.
+2. Configure the pipeline:
+ - Add a description and the GitHub project URL.
+ - Use Pipeline Script from SCM and specify:
+ - SCM: Git
+ - Repository URL
+ - Script Path
+   
+### Step 9: Run the Pipeline
+1. Go to the Jenkins dashboard and trigger the build.
+2. Monitor the build process and logs.
+   
+### URLs for Services
+- Jenkins: http://localhost:8082
+- SonarQube: http://localhost:9000
+- Nexus: http://localhost:8081
